@@ -6,12 +6,14 @@
  */
 
 class Game{
-    constructor(height, width){
-        this.width = width,
+    constructor(p1, p2, height = 6, width = 7){
+        this.players = [p1, p2],
         this.height = height,
-        this.currPlayer = 1,
+        this.width = width,
+        this.currPlayer = p1,
         this.makeBoard(),
-        this.makeHtmlBoard()
+        this.makeHtmlBoard(),
+        this.gameOver = false
     }
     makeBoard(){
         this.board = []
@@ -60,7 +62,7 @@ class Game{
     placeInTable(y, x){
         const piece = document.createElement('div');
         piece.classList.add('piece');
-        piece.classList.add(`p${this.currPlayer}`);
+        piece.style.backgroundColor = this.currPlayer.color;
         piece.style.top = -50 * (y + 2);
 
         const spot = document.getElementById(`${y}-${x}`);
@@ -96,10 +98,10 @@ class Game{
         }
     
         // switch players
-        this.currPlayer = this.currPlayer === 1 ? 2 : 1;
+        this.currPlayer = this.currPlayer === this.players[0] ? this.players[1] : this.players[0];
     }
     checkForWin(){
-        function _win(cells) {
+        const _win = cells => {
             // Check four cells to see if they're all color of current player
             //  - cells: list of four (y, x) cells
             //  - returns true if all are legal coordinates & all match currPlayer
@@ -132,7 +134,15 @@ class Game{
     }
 }
 
-new Game(6, 7);
+class Player{
+    constructor(string){
+        this.color = string
+    }
+}
 
-makeBoard();
-makeHtmlBoard();
+const newGame = document.querySelector('#new-game');
+newGame.addEventListener('click', () => {
+    let p1 = new Player(document.getElementById('p1-color').value);
+    let p2 = new Player(document.getElementById('p2-color').value);
+    new Game(p1, p2);
+});
